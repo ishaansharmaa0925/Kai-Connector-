@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kai Creator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: light;
+      /* Yellow-only palette (including text/borders) */
+      --ink: #2a1f00; /* very dark mustard */
+      --bg: #fff3a6; /* warm pastel yellow */
+      --grid: rgba(42, 31, 0, 0.08);
+      --panel: #fffbe0; /* near-white yellow */
+      --panel2: #fffbe0;
+      --muted: rgba(42, 31, 0, 0.72);
+      --border: #2a1f00;
+      --shadow: 8px 8px 0 var(--ink);
+      --shadow-soft: 6px 6px 0 var(--ink);
+      --primary: #ffd23c;
+      --primary-hover: #ffca1a;
+      --secondary: #fffbe0;
+      --secondary-hover: #fff2b8;
+      --danger: #ffb300;
+      --danger-hover: #ffa000;
+      --focus: rgba(255, 210, 60, 0.32);
+      --radius: 22px;
+      --accent-yellow: #ffd95a;
+      --accent-yellow-2: #ffef8a;
+      --accent-yellow-3: #ffe66d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px 16px 18px;
+      background-color: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M16 0H0V16' fill='none' stroke='rgba(42,31,0,0.08)' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 16px 16px;
+      color: var(--ink);
+      font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, sans-serif;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      inset: auto;
+      width: 420px;
+      height: 280px;
+      border-radius: 999px;
+      filter: blur(34px);
+      opacity: 0.30;
+      pointer-events: none;
+    }
+
+    body::before {
+      top: -120px;
+      left: -140px;
+      background: var(--accent-yellow-3);
+    }
+
+    body::after {
+      right: -160px;
+      bottom: -140px;
+      background: var(--accent-yellow-2);
+    }
+
+    .shell {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 14px;
+      min-height: 100%;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 2px solid var(--ink);
+      background: var(--accent-yellow);
+      box-shadow: 4px 4px 0 var(--ink);
+      flex: none;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .subtle {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--accent-yellow-2);
+      box-shadow: 4px 4px 0 var(--ink);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      width: fit-content;
+    }
+
+    .spark {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 10px;
+      border: 2px solid var(--ink);
+      background: var(--accent-yellow);
+      box-shadow: 3px 3px 0 var(--ink);
+      margin-left: 6px;
+      vertical-align: middle;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .card {
+      background: var(--panel2);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      resize: vertical;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+      background: var(--panel);
+      color: var(--ink);
+      font: 12px/1.5 Consolas, "Courier New", monospace;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--focus), 3px 3px 0 var(--ink);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button,
+    input[type="file"]::file-selector-button {
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    button:hover,
+    input[type="file"]::file-selector-button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active,
+    input[type="file"]::file-selector-button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .primary {
+      background: var(--primary);
+      color: var(--ink);
+    }
+
+    .primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .secondary {
+      background: var(--secondary);
+      color: var(--ink);
+    }
+
+    .secondary:hover {
+      background: var(--secondary-hover);
+    }
+
+    .danger {
+      background: var(--danger);
+      color: var(--ink);
+    }
+
+    .danger:hover {
+      background: var(--danger-hover);
+    }
+
+    input[type="file"] {
+      max-width: 100%;
+      color: var(--muted);
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    .options label {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .options input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--ink);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border: 2px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+      background: var(--panel);
+      box-shadow: 3px 3px 0 var(--ink);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .pill.isVars {
+      background: rgba(255, 217, 90, 0.35);
+    }
+
+    .pill.isStyles {
+      background: rgba(255, 239, 138, 0.38);
+    }
+
+    .pill strong {
+      display: block;
+      font-weight: 800;
+      font-size: 12px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .pill span {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .pill input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--ink);
+    }
+
+    .status {
+      min-height: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status.error {
+      color: var(--ink);
+      background: rgba(255, 179, 0, 0.30);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 10px;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .status.success {
+      color: var(--ink);
+      background: rgba(255, 217, 90, 0.42);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 10px;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .status.pending {
+      color: var(--ink);
+      background: rgba(255, 239, 138, 0.62);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 10px;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .hint {
+      font-size: 12px;
+    }
+
+    .footerRow {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tiny {
+      font-size: 11px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div style="min-width:0">
+          <div class="chip">Kai Creator</div>
+          <h1>Tokens → Variables + Styles <span class="spark" aria-hidden="true">*</span></h1>
+          <p>Paste your token JSON, choose actions, and generate everything in one go.</p>
+        </div>
+      </div>
+      <button id="close" class="danger" type="button" title="Close">Close</button>
+    </div>
+
+    <div class="card">
+      <div class="footerRow">
+        <div class="row">
+          <button id="load-sample" class="secondary" type="button">Load Sample</button>
+          <button id="load-file" class="secondary" type="button">Load JSON File</button>
+          <input id="file-input" type="file" accept=".json,application/json" style="display:none">
+        </div>
+        <div class="tiny">Tip: You can paste directly or load a file.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="subtle" style="margin-bottom:10px;">Actions</div>
+      <div class="actions" role="group" aria-label="Actions">
+        <label class="pill isVars">
+          <div>
+            <strong>Create Variables</strong>
+            <span>Saves tokens to Figma Variables</span>
+          </div>
+          <input id="do-variables" type="checkbox" checked>
+        </label>
+        <label class="pill isStyles">
+          <div>
+            <strong>Create Styles</strong>
+            <span>Paint, effect, and text styles</span>
+          </div>
+          <input id="do-styles" type="checkbox" checked>
+        </label>
+      </div>
+
+      <div class="options" style="margin-top:10px;">
+        <label><input id="include-text-styles" type="checkbox" checked>Include default text styles (if fonts exist)</label>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="apply" class="primary" type="button">Apply Selected</button>
+        <div class="tiny" id="action-hint">Runs both by default.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="subtle" style="margin-bottom:10px;">Token JSON</div>
+      <textarea id="token-input" spellcheck="false" placeholder='Paste token JSON here...'></textarea>
+      <div id="status" class="status hint" style="margin-top:10px;">Waiting for token JSON.</div>
+    </div>
+  </div>
+
+  <script>
+    const sampleTokens = {
+      primitives: {
+        color: {
+          primary: {
+            100: "#E8F5E9",
+            400: "#66BB6A",
+            500: "#34A853",
+            700: "#2E7D32"
+          },
+          secondary: {
+            500: "#28303F"
+          },
+          background: {
+            default: "#FAFAF4"
+          },
+          surface: {
+            card: "#FFFFFF"
+          },
+          text: {
+            primary: "#1B1B1B",
+            muted: "#717182"
+          },
+          border: {
+            default: "#CFCECE"
+          },
+          error: {
+            500: "#D4183D"
+          },
+          black: {
+            500: "#000000"
+          }
+        },
+        spacing: {
+          1: "4px",
+          2: "8px",
+          3: "12px",
+          4: "16px",
+          6: "24px",
+          8: "32px",
+          12: "48px",
+          14: "56px",
+          16: "64px"
+        },
+        radius: {
+          none: "0px",
+          xs: "2px",
+          sm: "4px",
+          md: "6px",
+          lg: "8px",
+          xl: "10px",
+          pill: "9999px"
+        },
+        shadow: {
+          sm: "0px 2px 8px rgba(0,0,0,0.06)",
+          md: "0px 4px 40px rgba(0,0,0,0.05)",
+          lg: "0px 8px 32px rgba(0,0,0,0.12)",
+          xl: "0px 16px 48px rgba(0,0,0,0.16)"
+        }
+      },
+      semantic: {
+        color: {
+          bg: {
+            primary: "{primitives.color.primary.500}",
+            secondary: "{primitives.color.background.default}",
+            surface: "{primitives.color.surface.card}"
+          },
+          text: {
+            primary: "{primitives.color.text.primary}",
+            muted: "{primitives.color.text.muted}",
+            inverse: "{primitives.color.surface.card}"
+          },
+          border: {
+            default: "{primitives.color.border.default}"
+          },
+          status: {
+            error: "{primitives.color.error.500}"
+          }
+        },
+        spacing: {
+          cardPadding: "{primitives.spacing.4}",
+          sectionGap: "{primitives.spacing.8}"
+        }
+      }
+    };
+
+    const tokenInput = document.getElementById("token-input");
+    const fileInput = document.getElementById("file-input");
+    const status = document.getElementById("status");
+    const closeButton = document.getElementById("close");
+    const loadSampleButton = document.getElementById("load-sample");
+    const loadFileButton = document.getElementById("load-file");
+    const applyButton = document.getElementById("apply");
+    const doVariablesCheckbox = document.getElementById("do-variables");
+    const doStylesCheckbox = document.getElementById("do-styles");
+    const includeTextStylesCheckbox = document.getElementById("include-text-styles");
+    const actionHint = document.getElementById("action-hint");
+
+    function setStatus(message, state) {
+      status.textContent = message;
+      status.classList.toggle("error", state === "error");
+      status.classList.toggle("success", state === "success");
+      status.classList.toggle("pending", state === "pending");
+      status.classList.toggle("hint", !state || state === "hint");
+    }
+
+    function parseTokens() {
+      const raw = tokenInput.value.trim();
+
+      if (!raw) {
+        throw new Error("Paste token JSON or load a JSON file first.");
+      }
+
+      const parsed = JSON.parse(raw);
+
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("The token payload must be a JSON object.");
+      }
+
+      const candidate =
+        parsed.primitives && typeof parsed.primitives === "object"
+          ? parsed
+          : parsed.tokens && parsed.tokens.primitives && typeof parsed.tokens.primitives === "object"
+            ? parsed.tokens
+            : null;
+
+      if (!candidate) {
+        const looksLikeManifest =
+          typeof parsed.name === "string" &&
+          (typeof parsed.main === "string" ||
+            typeof parsed.ui === "string" ||
+            typeof parsed.api === "string" ||
+            parsed.networkAccess);
+
+        if (looksLikeManifest) {
+          throw new Error(
+            'This looks like a Figma plugin manifest, not a token file. Load your "tokens.json" file instead.'
+          );
+        }
+
+        throw new Error(
+          'The JSON must include a top-level "primitives" object, or a top-level "tokens.primitives" object.'
+        );
+      }
+
+      return candidate;
+    }
+
+    function getOptions() {
+      return {
+        includeTextStyles: Boolean(includeTextStylesCheckbox.checked),
+      };
+    }
+
+    function updateActionHint() {
+      const doVars = Boolean(doVariablesCheckbox.checked);
+      const doStyles = Boolean(doStylesCheckbox.checked);
+
+      if (doVars && doStyles) {
+        actionHint.textContent = "Runs Variables then Styles.";
+      } else if (doVars) {
+        actionHint.textContent = "Runs Variables only.";
+      } else if (doStyles) {
+        actionHint.textContent = "Runs Styles only.";
+      } else {
+        actionHint.textContent = "Select at least one action.";
+      }
+    }
+
+    loadSampleButton.onclick = () => {
+      tokenInput.value = JSON.stringify(sampleTokens, null, 2);
+      setStatus("Sample tokens loaded. You can apply now or edit the JSON first.", "success");
+    };
+
+    loadFileButton.onclick = () => {
+      fileInput.click();
+    };
+
+    applyButton.onclick = () => {
+      try {
+        const tokens = parseTokens();
+        const doVars = Boolean(doVariablesCheckbox.checked);
+        const doStyles = Boolean(doStylesCheckbox.checked);
+        const options = getOptions();
+
+        if (!doVars && !doStyles) {
+          setStatus("Select at least one action (Variables or Styles).", "error");
+          return;
+        }
+
+        const type = doVars && doStyles ? "run-all" : doVars ? "import-tokens" : "generate-styles";
+        parent.postMessage({ pluginMessage: { type, tokens, options } }, "*");
+        setStatus("Working…", "pending");
+      } catch (error) {
+        setStatus(error.message || "Could not parse the token JSON.", "error");
+      }
+    };
+
+    closeButton.onclick = () => {
+      parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
+    };
+
+    fileInput.onchange = async (event) => {
+      const file = event.target.files && event.target.files[0];
+
+      if (!file) {
+        return;
+      }
+
+        try {
+          const text = await file.text();
+          const parsed = JSON.parse(text);
+          tokenInput.value = JSON.stringify(parsed, null, 2);
+          setStatus(`Loaded ${file.name}. Review it, then click Apply Selected.`, "success");
+        } catch (error) {
+          setStatus(`Could not read ${file.name}: ${error.message || "Invalid JSON."}`, "error");
+        } finally {
+          fileInput.value = "";
+        }
+      };
+
+    window.onmessage = (event) => {
+      const pluginMessage = event.data && event.data.pluginMessage;
+
+      if (!pluginMessage) {
+        return;
+      }
+
+      if (pluginMessage.type === "status") {
+        setStatus(pluginMessage.message, pluginMessage.isError ? "error" : "success");
+        return;
+      }
+    };
+
+    doVariablesCheckbox.onchange = updateActionHint;
+    doStylesCheckbox.onchange = updateActionHint;
+    includeTextStylesCheckbox.onchange = updateActionHint;
+    updateActionHint();
+  </script>
+</body>
+</html>

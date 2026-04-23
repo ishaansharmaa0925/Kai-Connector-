@@ -1,6 +1,6 @@
 figma.showUI(__html__, {
-  width: 420,
-  height: 720,
+  width: 380,
+  height: 640,
 });
 
 const DEFAULT_TEXT_STYLE_SPECS = [

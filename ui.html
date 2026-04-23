@@ -6,28 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root {
-      color-scheme: light;
-      /* Yellow-only palette (including text/borders) */
-      --ink: #2a1f00; /* very dark mustard */
-      --bg: #fff3a6; /* warm pastel yellow */
-      --grid: rgba(42, 31, 0, 0.08);
-      --panel: #fffbe0; /* near-white yellow */
-      --panel2: #fffbe0;
-      --muted: rgba(42, 31, 0, 0.72);
-      --border: #2a1f00;
-      --shadow: 8px 8px 0 var(--ink);
-      --shadow-soft: 6px 6px 0 var(--ink);
-      --primary: #ffd23c;
-      --primary-hover: #ffca1a;
-      --secondary: #fffbe0;
-      --secondary-hover: #fff2b8;
-      --danger: #ffb300;
-      --danger-hover: #ffa000;
-      --focus: rgba(255, 210, 60, 0.32);
-      --radius: 22px;
-      --accent-yellow: #ffd95a;
-      --accent-yellow-2: #ffef8a;
-      --accent-yellow-3: #ffe66d;
+      color-scheme: dark;
+      /* Dark, glassy palette inspired by modern loading screens */
+      --ink: #eaf0ff;
+      --bg: #0a101a;
+      --panel: rgba(17, 27, 42, 0.78);
+      --panel2: rgba(14, 22, 35, 0.72);
+      --muted: rgba(234, 240, 255, 0.72);
+      --border: rgba(234, 240, 255, 0.14);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      --shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.45);
+      --primary: #ffffff;
+      --primary-hover: #f1f5ff;
+      --secondary: rgba(234, 240, 255, 0.10);
+      --secondary-hover: rgba(234, 240, 255, 0.16);
+      --danger: rgba(255, 86, 86, 0.18);
+      --danger-hover: rgba(255, 86, 86, 0.26);
+      --focus: rgba(120, 175, 255, 0.22);
+      --radius: 18px;
+      --accent-a: rgba(109, 231, 210, 0.55);
+      --accent-b: rgba(120, 175, 255, 0.55);
+      --accent-c: rgba(255, 184, 108, 0.55);
     }
 
     * {
@@ -38,8 +37,13 @@
       margin: 0;
       padding: 16px 16px 18px;
       background-color: var(--bg);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M16 0H0V16' fill='none' stroke='rgba(42,31,0,0.08)' stroke-width='1'/%3E%3C/svg%3E");
-      background-size: 16px 16px;
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(120, 175, 255, 0.18), transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(109, 231, 210, 0.14), transparent 42%),
+        radial-gradient(circle at 75% 92%, rgba(255, 184, 108, 0.14), transparent 44%),
+        radial-gradient(rgba(234, 240, 255, 0.10) 1px, transparent 1px);
+      background-size: auto, auto, auto, 22px 22px;
+      background-position: 0 0, 0 0, 0 0, 0 0;
       color: var(--ink);
       font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, sans-serif;
     }
@@ -51,23 +55,23 @@
       z-index: -1;
       inset: auto;
       width: 420px;
-      height: 280px;
+      height: 320px;
       border-radius: 999px;
-      filter: blur(34px);
-      opacity: 0.30;
+      filter: blur(40px);
+      opacity: 0.32;
       pointer-events: none;
     }
 
     body::before {
       top: -120px;
       left: -140px;
-      background: var(--accent-yellow-3);
+      background: var(--accent-b);
     }
 
     body::after {
       right: -160px;
       bottom: -140px;
-      background: var(--accent-yellow-2);
+      background: var(--accent-a);
     }
 
     .shell {
@@ -76,10 +80,11 @@
       gap: 14px;
       padding: 14px;
       min-height: 100%;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--panel);
       box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
     }
 
     .header {
@@ -100,9 +105,9 @@
       width: 36px;
       height: 36px;
       border-radius: 10px;
-      border: 2px solid var(--ink);
-      background: var(--accent-yellow);
-      box-shadow: 4px 4px 0 var(--ink);
+      border: 1px solid rgba(234, 240, 255, 0.18);
+      background: radial-gradient(circle at 30% 30%, rgba(109, 231, 210, 0.95), rgba(120, 175, 255, 0.35) 62%, rgba(255, 184, 108, 0.24));
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.40);
       flex: none;
     }
 
@@ -129,10 +134,10 @@
       align-items: center;
       gap: 8px;
       padding: 6px 10px;
-      border: 2px solid var(--ink);
+      border: 1px solid rgba(234, 240, 255, 0.16);
       border-radius: 999px;
-      background: var(--accent-yellow-2);
-      box-shadow: 4px 4px 0 var(--ink);
+      background: rgba(234, 240, 255, 0.08);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.30);
       font-weight: 700;
       font-size: 11px;
       letter-spacing: 0.02em;
@@ -147,9 +152,9 @@
       width: 22px;
       height: 22px;
       border-radius: 10px;
-      border: 2px solid var(--ink);
-      background: var(--accent-yellow);
-      box-shadow: 3px 3px 0 var(--ink);
+      border: 1px solid rgba(234, 240, 255, 0.18);
+      background: rgba(234, 240, 255, 0.08);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.34);
       margin-left: 6px;
       vertical-align: middle;
       font-weight: 900;
@@ -158,28 +163,29 @@
 
     .card {
       background: var(--panel2);
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 12px;
       box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
     }
 
     textarea {
       width: 100%;
-      min-height: 300px;
+      min-height: 260px;
       resize: vertical;
       padding: 12px;
-      border: 2px solid var(--border);
+      border: 1px solid rgba(234, 240, 255, 0.14);
       border-radius: calc(var(--radius) - 2px);
-      background: var(--panel);
+      background: rgba(10, 16, 26, 0.75);
       color: var(--ink);
       font: 12px/1.5 Consolas, "Courier New", monospace;
-      box-shadow: 3px 3px 0 var(--ink);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.34);
     }
 
     textarea:focus {
       outline: none;
-      box-shadow: 0 0 0 4px var(--focus), 3px 3px 0 var(--ink);
+      box-shadow: 0 0 0 4px var(--focus), 0 12px 26px rgba(0, 0, 0, 0.34);
     }
 
     .row {
@@ -191,14 +197,14 @@
 
     button,
     input[type="file"]::file-selector-button {
-      border: 2px solid var(--ink);
+      border: 1px solid rgba(234, 240, 255, 0.18);
       border-radius: 999px;
       padding: 10px 14px;
       font: inherit;
       font-weight: 700;
       cursor: pointer;
       transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
-      box-shadow: 3px 3px 0 var(--ink);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.38);
     }
 
     button:hover,
@@ -208,13 +214,13 @@
 
     button:active,
     input[type="file"]::file-selector-button:active {
-      transform: translate(2px, 2px);
-      box-shadow: 1px 1px 0 var(--ink);
+      transform: translateY(0px);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.42);
     }
 
     .primary {
       background: var(--primary);
-      color: var(--ink);
+      color: #0a101a;
     }
 
     .primary:hover {
@@ -279,20 +285,20 @@
       justify-content: space-between;
       gap: 10px;
       padding: 10px 10px;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: calc(var(--radius) - 2px);
-      background: var(--panel);
-      box-shadow: 3px 3px 0 var(--ink);
+      background: rgba(234, 240, 255, 0.06);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
       cursor: pointer;
       user-select: none;
     }
 
     .pill.isVars {
-      background: rgba(255, 217, 90, 0.35);
+      background: linear-gradient(135deg, rgba(120, 175, 255, 0.16), rgba(234, 240, 255, 0.06));
     }
 
     .pill.isStyles {
-      background: rgba(255, 239, 138, 0.38);
+      background: linear-gradient(135deg, rgba(255, 184, 108, 0.16), rgba(234, 240, 255, 0.06));
     }
 
     .pill strong {
@@ -324,29 +330,29 @@
 
     .status.error {
       color: var(--ink);
-      background: rgba(255, 179, 0, 0.30);
-      border: 2px solid var(--ink);
+      background: rgba(255, 86, 86, 0.14);
+      border: 1px solid rgba(255, 86, 86, 0.28);
       border-radius: 999px;
       padding: 8px 10px;
-      box-shadow: 3px 3px 0 var(--ink);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
     }
 
     .status.success {
       color: var(--ink);
-      background: rgba(255, 217, 90, 0.42);
-      border: 2px solid var(--ink);
+      background: rgba(109, 231, 210, 0.12);
+      border: 1px solid rgba(109, 231, 210, 0.26);
       border-radius: 999px;
       padding: 8px 10px;
-      box-shadow: 3px 3px 0 var(--ink);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
     }
 
     .status.pending {
       color: var(--ink);
-      background: rgba(255, 239, 138, 0.62);
-      border: 2px solid var(--ink);
+      background: rgba(120, 175, 255, 0.12);
+      border: 1px solid rgba(120, 175, 255, 0.26);
       border-radius: 999px;
       padding: 8px 10px;
-      box-shadow: 3px 3px 0 var(--ink);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
     }
 
     .hint {

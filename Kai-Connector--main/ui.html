@@ -539,7 +539,7 @@
         <label class="option-card">
           <div>
             <strong>Create Styles</strong>
-            <span>Create paint, effect, and typography styles.</span>
+            <span>Create styles plus radius, spacing, and alias variables.</span>
           </div>
           <input id="do-styles" type="checkbox" checked>
         </label>
@@ -633,7 +633,7 @@ Generate these primitive token groups:
 - primitives.color.text with primary, secondary, muted, disabled, inverse.
 - primitives.color.border with subtle, default, strong, focus.
 - primitives.spacing with 1, 2, 3, 4, 5, 6, 8, 10, 12, 16 using px values.
-- primitives.radius with none, xs, sm, md, lg, xl, xxl, pill using px values.
+- primitives.radius with none, xs, sm, md, lg, xl, xxl, pill using px values for corner radius and border radius.
 - primitives.shadow with xs, sm, md, lg, xl using CSS shadow strings and rgba colors.
 
 Generate these alias token groups under semantic:
@@ -647,7 +647,10 @@ Generate these alias token groups under semantic:
 - semantic.color.status.notification with 100-900 references.
 - semantic.color.component with useful product aliases for button, input, card, modal, toast, and focus states.
 - semantic.spacing with aliases for button padding, input padding, card padding, section gap, and page margin.
-- semantic.radius with aliases for button, input, card, modal, and pill.
+- semantic.radius with aliases for button, input, card, modal, pill, corner, border, and component radius names.
+- semantic.radius.corner must include none, small, medium, large, and extraLarge.
+- semantic.radius.border must include button, input, card, modal, and pill.
+- semantic.radius.component must include button, input, card, modal, tooltip, and toast.
 - semantic.shadow with aliases for card, dropdown, modal, and toast.
 
 Alias values must reference primitives exactly like this:

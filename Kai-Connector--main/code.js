@@ -402,6 +402,29 @@ function buildGeneratedTokenSet(root) {
         input: "{primitives.radius.md}",
         card: "{primitives.radius.lg}",
         modal: "{primitives.radius.xl}",
+        pill: "{primitives.radius.pill}",
+        corner: {
+          none: "{primitives.radius.none}",
+          small: "{primitives.radius.sm}",
+          medium: "{primitives.radius.md}",
+          large: "{primitives.radius.lg}",
+          extraLarge: "{primitives.radius.xl}",
+        },
+        border: {
+          button: "{primitives.radius.md}",
+          input: "{primitives.radius.md}",
+          card: "{primitives.radius.lg}",
+          modal: "{primitives.radius.xl}",
+          pill: "{primitives.radius.pill}",
+        },
+        component: {
+          button: "{primitives.radius.md}",
+          input: "{primitives.radius.md}",
+          card: "{primitives.radius.lg}",
+          modal: "{primitives.radius.xl}",
+          tooltip: "{primitives.radius.sm}",
+          toast: "{primitives.radius.lg}",
+        },
       },
       shadow: {
         card: "{primitives.shadow.sm}",
@@ -1092,10 +1115,15 @@ figma.ui.onmessage = async (msg) => {
     }
 
     if (msg.type === "generate-styles") {
+      postStatus("Creating variables for radius, spacing, and aliases...", false);
+      const vars = await importTokensAsVariables(tokens);
+
       postStatus("Creating styles…", false);
       const result = await generateStylesFromTokens(tokens, options);
       const warningSummary = result.warnings.length ? ` (${result.warnings.length} warning(s))` : "";
-      const message = `Styles ready: ${result.paintCount} colors, ${result.effectCount} effects, ${result.textCount} text${warningSummary}.`;
+      const message =
+        `Styles ready: ${result.paintCount} colors, ${result.effectCount} effects, ${result.textCount} text; ` +
+        `variables wrote ${vars.writtenCount}${warningSummary}.`;
       postStatus(message, false);
       figma.notify(message, { timeout: 4000 });
       return;

@@ -332,6 +332,10 @@
     }
 
     .status {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
       min-height: 24px;
       padding: 6px 8px;
       border: 1px solid var(--line);
@@ -346,6 +350,45 @@
     .status.pending {
       color: #111111;
       border-color: #bbbbbb;
+    }
+
+    .status.pending {
+      justify-content: center;
+      color: #111111;
+      background: #ffffff;
+      border-color: #111111;
+    }
+
+    .status.pending::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border: 2px solid #d7d7d7;
+      border-top-color: #111111;
+      border-radius: 999px;
+      animation: status-spin 700ms linear infinite;
+      flex: none;
+    }
+
+    .status.success {
+      justify-content: center;
+      color: #111111;
+      background: #ffffff;
+      border-color: #111111;
+      font-weight: 800;
+    }
+
+    .status.error {
+      justify-content: center;
+      color: #111111;
+      background: #ffffff;
+      border-color: #111111;
+    }
+
+    @keyframes status-spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .modal {
@@ -808,7 +851,7 @@ Quality rules:
 
         const type = doVars && doStyles ? "run-all" : doVars ? "import-tokens" : "generate-styles";
         parent.postMessage({ pluginMessage: { type, tokens, options } }, "*");
-        setStatus("Working...", "pending");
+        setStatus("Adding variables...", "pending");
       } catch (error) {
         setStatus(error.message || "Could not parse the token JSON.", "error");
       }
@@ -845,7 +888,19 @@ Quality rules:
       }
 
       if (pluginMessage.type === "status") {
-        setStatus(pluginMessage.message, pluginMessage.isError ? "error" : "success");
+        const message = String(pluginMessage.message || "");
+
+        if (pluginMessage.isError) {
+          setStatus(message, "error");
+          return;
+        }
+
+        if (/creating|working|adding/i.test(message)) {
+          setStatus(message || "Adding variables...", "pending");
+          return;
+        }
+
+        setStatus("Completed", "success");
       }
     };
 

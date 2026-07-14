@@ -308,6 +308,41 @@
       font-weight: 800;
     }
 
+    .actions-footer .button-inverse.is-pending {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #ffffff;
+      border-color: #111111;
+      color: #111111;
+      cursor: wait;
+    }
+
+    .actions-footer .button-inverse.is-pending::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border: 2px solid #d7d7d7;
+      border-top-color: #111111;
+      border-radius: 999px;
+      animation: status-spin 700ms linear infinite;
+      flex: none;
+    }
+
+    .actions-footer .button-inverse.is-success {
+      background: #ffffff;
+      border-color: #111111;
+      color: #111111;
+      font-weight: 900;
+    }
+
+    .actions-footer .button-inverse.is-error {
+      background: #ffffff;
+      border-color: #111111;
+      color: #111111;
+    }
+
     .hint {
       color: var(--muted);
       font-size: 9px;
@@ -329,60 +364,6 @@
     .json-box {
       flex: 1;
       min-height: 240px;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 8px;
-      min-height: 24px;
-      padding: 6px 8px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: #fafafa;
-      color: var(--muted);
-      font-size: 9px;
-    }
-
-    .status.error,
-    .status.success,
-    .status.pending {
-      color: #111111;
-      border-color: #bbbbbb;
-    }
-
-    .status.pending {
-      justify-content: center;
-      color: #111111;
-      background: #ffffff;
-      border-color: #111111;
-    }
-
-    .status.pending::before {
-      content: "";
-      width: 10px;
-      height: 10px;
-      border: 2px solid #d7d7d7;
-      border-top-color: #111111;
-      border-radius: 999px;
-      animation: status-spin 700ms linear infinite;
-      flex: none;
-    }
-
-    .status.success {
-      justify-content: center;
-      color: #111111;
-      background: #ffffff;
-      border-color: #111111;
-      font-weight: 800;
-    }
-
-    .status.error {
-      justify-content: center;
-      color: #111111;
-      background: #ffffff;
-      border-color: #111111;
     }
 
     @keyframes status-spin {
@@ -561,7 +542,6 @@
             <button id="apply" class="button-inverse" type="button">Apply Selected</button>
             <div class="hint" id="action-hint">Runs Variables then Styles.</div>
           </div>
-          <div id="status" class="status">Waiting for token JSON or theme config.</div>
         </div>
       </section>
     </div>
@@ -684,7 +664,6 @@ Quality rules:
 
     const tokenInput = document.getElementById("token-input");
     const fileInput = document.getElementById("file-input");
-    const status = document.getElementById("status");
     const closeButton = document.getElementById("close");
     const loadSampleButton = document.getElementById("load-sample");
     const loadFileButton = document.getElementById("load-file");
@@ -702,10 +681,15 @@ Quality rules:
     promptText.textContent = designerPrompt;
 
     function setStatus(message, state) {
-      status.textContent = message;
-      status.classList.toggle("error", state === "error");
-      status.classList.toggle("success", state === "success");
-      status.classList.toggle("pending", state === "pending");
+      applyButton.textContent = message || "Apply Selected";
+      applyButton.classList.toggle("is-error", state === "error");
+      applyButton.classList.toggle("is-success", state === "success");
+      applyButton.classList.toggle("is-pending", state === "pending");
+      applyButton.disabled = state === "pending";
+    }
+
+    function resetApplyStatus() {
+      setStatus("Apply Selected", "");
     }
 
     function parseTokens() {
@@ -802,7 +786,7 @@ Quality rules:
 
     loadSampleButton.onclick = () => {
       tokenInput.value = JSON.stringify(sampleTokens, null, 2);
-      setStatus("Sample config loaded. Review it or apply it directly.", "success");
+      resetApplyStatus();
     };
 
     loadFileButton.onclick = () => {
@@ -817,10 +801,10 @@ Quality rules:
       const copied = await copyTextToClipboard(designerPrompt);
 
       if (copied) {
-        setStatus("Prompt copied. Paste it into GPT or Claude to generate a JSON file.", "success");
+        setStatus("Prompt copied", "success");
         closePromptModal();
       } else {
-        setStatus("Could not copy the prompt automatically. Select the prompt text and copy it manually.", "error");
+        setStatus("Copy failed", "error");
       }
     };
 
@@ -848,7 +832,7 @@ Quality rules:
         const options = getOptions();
 
         if (!doVars && !doStyles) {
-          setStatus("Select at least one action: Variables or Styles.", "error");
+          setStatus("Select an action", "error");
           return;
         }
 
@@ -856,7 +840,7 @@ Quality rules:
         parent.postMessage({ pluginMessage: { type, tokens, options } }, "*");
         setStatus("Adding variables...", "pending");
       } catch (error) {
-        setStatus(error.message || "Could not parse the token JSON.", "error");
+        setStatus(error.message || "Invalid JSON", "error");
       }
     };
 
@@ -875,9 +859,9 @@ Quality rules:
         const text = await file.text();
         const parsed = JSON.parse(text);
         tokenInput.value = JSON.stringify(parsed, null, 2);
-        setStatus(`Loaded ${file.name}. Review it, then click Apply Selected.`, "success");
+        resetApplyStatus();
       } catch (error) {
-        setStatus(`Could not read ${file.name}: ${error.message || "Invalid JSON."}`, "error");
+        setStatus("File error", "error");
       } finally {
         fileInput.value = "";
       }

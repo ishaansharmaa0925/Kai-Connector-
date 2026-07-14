@@ -297,7 +297,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-top: auto;
+      margin-top: 0;
     }
 
     .actions-footer .button-inverse {
@@ -549,10 +549,6 @@
           <span>Include default typography styles when the required fonts exist in Figma.</span>
         </label>
 
-        <div class="actions-footer">
-          <button id="apply" class="button-inverse" type="button">Apply Selected</button>
-          <div class="hint" id="action-hint">Runs Variables then Styles.</div>
-        </div>
       </section>
 
       <section class="panel json-panel">
@@ -560,6 +556,10 @@
         <div class="json-frame">
           <div class="json-box">
             <textarea id="token-input" spellcheck="false" placeholder='Paste token JSON or a compact theme config here...'></textarea>
+          </div>
+          <div class="actions-footer">
+            <button id="apply" class="button-inverse" type="button">Apply Selected</button>
+            <div class="hint" id="action-hint">Runs Variables then Styles.</div>
           </div>
           <div id="status" class="status">Waiting for token JSON or theme config.</div>
         </div>

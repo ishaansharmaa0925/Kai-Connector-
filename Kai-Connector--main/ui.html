@@ -42,6 +42,9 @@
     body {
       margin: 0;
       padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #ffffff;
       color: var(--text);
       font: 10px/1.42 var(--font-ui);
@@ -102,8 +105,11 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      width: 100%;
+      max-width: 900px;
       min-height: calc(100vh - 12px);
       padding: 14px 10px 8px;
+      margin: auto;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: #ffffff;
@@ -399,7 +405,7 @@
       font: 900 26px/1 var(--font-ui);
       letter-spacing: 0.02em;
       animation:
-        kai-type 1050ms steps(11, end) 220ms both,
+        kai-type 1650ms steps(11, end) 320ms both,
         kai-cursor 620ms step-end infinite;
     }
 
@@ -411,7 +417,7 @@
       text-align: center;
       text-transform: uppercase;
       opacity: 0;
-      animation: kai-fade-up 420ms ease 1150ms both;
+      animation: kai-fade-up 520ms ease 1850ms both;
     }
 
     @keyframes kai-type {
@@ -758,7 +764,7 @@ Quality rules:
 
     window.setTimeout(() => {
       splash.classList.add("is-hidden");
-    }, 1850);
+    }, 2900);
 
     function setStatus(message, state) {
       applyButton.textContent = message || "Apply Selected";

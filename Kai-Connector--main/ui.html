@@ -396,14 +396,23 @@
       pointer-events: none;
     }
 
+    .splash-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
     .splash-word {
       position: relative;
+      margin: 0 auto;
       width: 11ch;
       overflow: hidden;
       white-space: nowrap;
       border-right: 2px solid #ffffff;
       font: 900 26px/1 var(--font-ui);
       letter-spacing: 0.02em;
+      text-align: center;
       animation:
         kai-type 1650ms steps(11, end) 320ms both,
         kai-cursor 620ms step-end infinite;
@@ -547,7 +556,7 @@
 </head>
 <body>
   <div id="splash" class="splash" aria-hidden="true">
-    <div>
+    <div class="splash-content">
       <div class="splash-word">Kai Creator</div>
       <div class="splash-subtitle">Design System Builder</div>
     </div>

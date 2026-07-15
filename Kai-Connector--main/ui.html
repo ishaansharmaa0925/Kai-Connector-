@@ -668,89 +668,52 @@
       }
     };
 
-    const designerPrompt = `You are a senior design-system designer creating a JSON token file for a Figma plugin called Kai Creator.
+    const designerPrompt = `Create a compact JSON theme config for Kai Creator, a Figma plugin that expands compact inputs into a complete design system with color scales, aliases, typography, spacing, corner radius, border radius, and shadows.
 
-First ask me these two questions and wait for my answers:
-1. What is the primary brand color? I can provide a hex value, RGB value, or a color description.
-2. What font family should the design system use?
+Before you answer, check these two fields:
+Primary color: [PASTE PRIMARY COLOR HERE]
+Typography: [PASTE FONT FAMILY HERE]
 
-After I answer, generate one complete raw JSON object only. Do not include markdown, comments, explanations, or code fences.
+If either field is blank or still contains brackets, ask me only for the missing value and stop.
+If both fields are filled, return one raw JSON object only.
 
-The JSON must use this top-level shape:
+Rules:
+- No markdown.
+- No code fences.
+- No explanation before or after the JSON.
+- Use valid JSON only.
+- Use double quotes for every key and string.
+- Use hex colors only, formatted as "#RRGGBB".
+- If the primary color is a name, RGB value, or description, convert it into a professional hex color.
+- Choose secondary and tertiary colors that support the primary color.
+- Choose success, warning, error, and notification colors that are distinct, accessible, and useful for UI states.
+- Use the typography value as typography.fontFamily.
+- Use "Roboto Mono" for typography.monoFontFamily unless I provide a mono font.
+- Keep the exact JSON keys shown below.
+
+Return exactly this compact shape with real values:
 {
-  "primitives": {},
-  "semantic": {},
-  "textStyles": []
+  "primary": "#RRGGBB",
+  "secondary": "#RRGGBB",
+  "tertiary": "#RRGGBB",
+  "success": "#RRGGBB",
+  "warning": "#RRGGBB",
+  "error": "#RRGGBB",
+  "notification": "#RRGGBB",
+  "typography": {
+    "fontFamily": "FONT_NAME",
+    "monoFontFamily": "Roboto Mono"
+  }
 }
 
-Kai Creator imports this JSON like this:
-- "primitives" becomes the Figma Variables collection named "Primitives".
-- "semantic" becomes the Figma Variables collection named "Aliases".
-- "textStyles" becomes Figma text styles.
-- A path like primitives.color.primary.500 becomes color/primary/500.
-- A path like semantic.color.status.error.200 becomes color/status/error/200.
-
-Generate these primitive token groups:
-- primitives.color.primary with 100, 200, 300, 400, 500, 600, 700, 800, 900. Use my primary color as 500.
-- primitives.color.secondary with 100-900.
-- primitives.color.tertiary with 100-900.
-- primitives.color.success with 100-900.
-- primitives.color.warning with 100-900.
-- primitives.color.error with 100-900.
-- primitives.color.notification with 100-900.
-- primitives.color.neutral with 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000.
-- primitives.color.background with canvas, surface, elevated, inverse.
-- primitives.color.text with primary, secondary, muted, disabled, inverse.
-- primitives.color.border with subtle, default, strong, focus.
-- primitives.spacing with 1, 2, 3, 4, 5, 6, 8, 10, 12, 16 using px values.
-- primitives.radius with none, xs, sm, md, lg, xl, xxl, pill using px values for corner radius and border radius.
-- primitives.shadow with xs, sm, md, lg, xl using CSS shadow strings and rgba colors.
-
-Generate these alias token groups under semantic:
-- semantic.color.brand with primary, secondary, tertiary.
-- semantic.color.bg with canvas, surface, elevated, inverse.
-- semantic.color.text with primary, secondary, muted, disabled, inverse.
-- semantic.color.border with subtle, default, strong, focus.
-- semantic.color.status.success with 100-900 references.
-- semantic.color.status.warning with 100-900 references.
-- semantic.color.status.error with 100-900 references.
-- semantic.color.status.notification with 100-900 references.
-- semantic.color.component with useful product aliases for button, input, card, modal, toast, and focus states.
-- semantic.spacing with aliases for button padding, input padding, card padding, section gap, and page margin.
-- semantic.radius with aliases for button, input, card, modal, pill, corner, border, and component radius names.
-- semantic.radius.corner must include none, small, medium, large, and extraLarge.
-- semantic.radius.border must include button, input, card, modal, and pill.
-- semantic.radius.component must include button, input, card, modal, tooltip, and toast.
-- semantic.shadow with aliases for card, dropdown, modal, and toast.
-
-Alias values must reference primitives exactly like this:
-"{primitives.color.primary.500}"
-"{primitives.color.error.200}"
-"{primitives.spacing.4}"
-"{primitives.radius.md}"
-"{primitives.shadow.sm}"
-
-Include textStyles with these names:
-- typography/display
-- typography/h1
-- typography/h2
-- typography/h3
-- typography/body
-- typography/body-small
-- typography/label
-- typography/caption
-
-For every text style, use my chosen font family, a valid fontStyle, numeric fontSize, and numeric lineHeight.
-
-Quality rules:
-- Use accessible contrast for text, surface, border, and status aliases.
-- Make secondary and tertiary feel related to the primary color.
-- Make success, warning, error, and notification distinct from each other.
-- Use 500 as the main/default shade for every color scale.
-- Use hex colors for solid colors.
-- Use rgba only inside shadow values.
-- Use px strings for spacing and radius.
-- Return only the final JSON object after I answer the two questions.`;
+Kai Creator will expand this compact JSON into:
+- primary, secondary, tertiary, success, warning, error, notification, and neutral color scales from 100 to 900
+- primitive variables
+- alias variables with design-system names like color/status/error/200 and radius/component/card
+- typography styles
+- spacing variables
+- corner radius and border radius variables
+- shadow variables and effect styles`;
 
     const tokenInput = document.getElementById("token-input");
     const fileInput = document.getElementById("file-input");

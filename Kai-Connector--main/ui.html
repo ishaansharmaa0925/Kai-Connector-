@@ -692,6 +692,12 @@ Quality rules:
       setStatus("Apply Selected", "");
     }
 
+    tokenInput.addEventListener("input", () => {
+      if (!applyButton.classList.contains("is-pending")) {
+        resetApplyStatus();
+      }
+    });
+
     function parseTokens() {
       const raw = tokenInput.value.trim();
 

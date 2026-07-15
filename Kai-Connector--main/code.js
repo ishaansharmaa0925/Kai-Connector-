@@ -223,6 +223,100 @@ function createShadeScale(seedColor) {
   return scale;
 }
 
+function rgbToHsl(color) {
+  const r = color.r;
+  const g = color.g;
+  const b = color.b;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const lightness = (max + min) / 2;
+
+  if (max === min) {
+    return { h: 0, s: 0, l: lightness };
+  }
+
+  const delta = max - min;
+  const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+  let hue;
+
+  if (max === r) {
+    hue = (g - b) / delta + (g < b ? 6 : 0);
+  } else if (max === g) {
+    hue = (b - r) / delta + 2;
+  } else {
+    hue = (r - g) / delta + 4;
+  }
+
+  return { h: hue * 60, s: saturation, l: lightness };
+}
+
+function hueToRgb(p, q, t) {
+  let value = t;
+  if (value < 0) value += 1;
+  if (value > 1) value -= 1;
+  if (value < 1 / 6) return p + (q - p) * 6 * value;
+  if (value < 1 / 2) return q;
+  if (value < 2 / 3) return p + (q - p) * (2 / 3 - value) * 6;
+  return p;
+}
+
+function hslToHex(hue, saturation, lightness) {
+  const h = ((hue % 360) + 360) % 360 / 360;
+  const s = clamp01(saturation);
+  const l = clamp01(lightness);
+  let r = l;
+  let g = l;
+  let b = l;
+
+  if (s !== 0) {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hueToRgb(p, q, h + 1 / 3);
+    g = hueToRgb(p, q, h);
+    b = hueToRgb(p, q, h - 1 / 3);
+  }
+
+  return rgbaToHex({ r, g, b, a: 1 }, false);
+}
+
+function createHarmonyPalette(primary, harmonyName) {
+  const hsl = rgbToHsl(parseColorToRgba(primary));
+  const harmony = String(harmonyName || "split-complementary").toLowerCase().replace(/[\s_-]+/g, "");
+  let secondaryShift = 150;
+  let tertiaryShift = 210;
+
+  if (harmony === "analogous") {
+    secondaryShift = 30;
+    tertiaryShift = -30;
+  } else if (harmony === "complementary") {
+    secondaryShift = 180;
+    tertiaryShift = 180;
+  } else if (harmony === "triad" || harmony === "triadic") {
+    secondaryShift = 120;
+    tertiaryShift = 240;
+  } else if (harmony === "square") {
+    secondaryShift = 90;
+    tertiaryShift = 180;
+  } else if (harmony === "compound") {
+    secondaryShift = 30;
+    tertiaryShift = 180;
+  } else if (harmony === "shades" || harmony === "monochromatic") {
+    secondaryShift = 0;
+    tertiaryShift = 0;
+  }
+
+  const makeColor = (shift, lightnessOffset) => hslToHex(
+    hsl.h + shift,
+    Math.max(0.35, Math.min(0.9, hsl.s || 0.55)),
+    Math.max(0.25, Math.min(0.72, hsl.l + lightnessOffset))
+  );
+
+  return {
+    secondary: makeColor(secondaryShift, harmony === "shades" || harmony === "monochromatic" ? 0.12 : 0.02),
+    tertiary: makeColor(tertiaryShift, harmony === "shades" || harmony === "monochromatic" ? -0.12 : -0.02),
+  };
+}
+
 function alphaColor(color, alpha) {
   const rgba = parseColorToRgba(color);
   return `rgba(${rgbaUnitTo255(rgba.r)}, ${rgbaUnitTo255(rgba.g)}, ${rgbaUnitTo255(rgba.b)}, ${alpha})`;
@@ -256,14 +350,14 @@ function buildGeneratedTokenSet(root) {
   }
 
   const primary = ensureSeedColor(primarySeed, "#3B82F6");
-  const secondary = ensureSeedColor(
-    getFirstDefined(root, ["secondary", "colors.secondary", "palette.secondary", "brand.secondary", "theme.secondary"]),
-    "#7C3AED"
+  const generatedHarmony = createHarmonyPalette(
+    primary,
+    getFirstDefined(root, ["harmony", "colorHarmony", "colors.harmony", "theme.harmony"]) || "split-complementary"
   );
-  const tertiary = ensureSeedColor(
-    getFirstDefined(root, ["tertiary", "colors.tertiary", "palette.tertiary", "brand.tertiary", "theme.tertiary"]),
-    "#14B8A6"
-  );
+  // Compact AI responses often include repeated placeholder colors. Derive
+  // brand colors from primary so those values cannot force a fixed palette.
+  const secondary = generatedHarmony.secondary;
+  const tertiary = generatedHarmony.tertiary;
   const success = ensureSeedColor(
     getFirstDefined(root, ["success", "colors.success", "status.success", "semantic.status.success"]),
     "#16A34A"

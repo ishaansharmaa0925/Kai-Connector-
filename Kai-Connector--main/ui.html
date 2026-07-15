@@ -524,6 +524,25 @@
       overflow: auto;
     }
 
+    .prompt-modes {
+      display: flex;
+      gap: 6px;
+    }
+
+    .prompt-mode {
+      flex: 1;
+      padding: 7px 10px;
+      background: #ffffff;
+      color: #111111;
+      border-color: var(--line);
+    }
+
+    .prompt-mode.is-active {
+      background: #111111;
+      color: #ffffff;
+      border-color: #111111;
+    }
+
     .modal-actions {
       display: flex;
       justify-content: flex-end;
@@ -646,6 +665,10 @@
         </div>
         <button id="close-prompt" class="icon-button" type="button" aria-label="Close prompt">&times;</button>
       </div>
+      <div class="prompt-modes" role="tablist" aria-label="Prompt version">
+        <button id="free-prompt" class="prompt-mode is-active" type="button" role="tab" aria-selected="true">Free GPT / Claude</button>
+        <button id="paid-prompt" class="prompt-mode" type="button" role="tab" aria-selected="false">Paid GPT / Claude</button>
+      </div>
       <div id="prompt-text" class="prompt-box"></div>
       <div class="modal-actions">
         <button id="copy-prompt" class="button-inverse" type="button">Copy Prompt</button>
@@ -668,58 +691,75 @@
       }
     };
 
-    const designerPrompt = `Create a compact, readable JSON theme config for Kai Creator, a Figma plugin that expands compact inputs into a complete design system with color scales, aliases, typography, spacing, corner radius, border radius, and shadows.
+    const freePrompt = `Create a valid JSON design-token file for the Kai Creator Figma plugin.
 
-First check whether you know these two values:
-1. Primary color
-2. Typography font family
+Ask me these questions one at a time before generating anything:
+1. What is the primary brand color in hex format? Example: #EF5350
+2. What typography font family should be used? Example: Inter
 
-If either value is missing, ask exactly these questions and stop:
-What is the primary color? Example: #EF5350
-What is the typography font family? Example: Open Sans
+After I answer, return ONLY valid JSON. Never use Markdown, code fences, comments, explanations, or trailing commas. Format it across multiple lines with 2-space indentation.
 
-After I answer both questions, return one raw JSON object only.
+This is the FREE version, so keep the response small and reliable. Create exactly five shades for every color using these keys: 100, 300, 500, 700, 900. The 500 value must be the main color.
 
-Rules:
-- No markdown.
-- No code fences.
-- No explanation before or after the JSON.
-- Do not return the JSON on one line.
-- Format the JSON across multiple lines with 2-space indentation.
-- Use valid JSON only.
-- Use double quotes for every key and string.
-- Use hex colors only, formatted as "#RRGGBB".
-- If the primary color is a name, RGB value, or description, convert it into a professional hex color.
-- Choose secondary and tertiary colors that support the primary color.
-- Choose success, warning, error, and notification colors that are distinct, accessible, and useful for UI states.
-- Use the typography value as typography.fontFamily.
-- Use "Roboto Mono" for typography.monoFontFamily unless I provide a mono font.
-- Keep the exact JSON keys shown below.
-- Replace every placeholder with real values.
+Derive secondary and tertiary from the exact primary color I provide. Do not use a generic palette or remembered defaults. Use a color-wheel relationship: secondary should use a split-complementary hue about 150 degrees from primary, and tertiary should use the other split-complementary hue about 210 degrees from primary. Preserve useful saturation and contrast, then adjust lightness for readability. Secondary and tertiary must be visibly different from primary and from each other. Never use #5C6BC0, #26A69A, or any other fixed example color unless the calculation from my primary produces it exactly. Make success green, warning amber, error red, and notification a distinct blue or cyan.
 
-Return exactly this readable JSON shape:
+Include real values for:
+- primary, secondary, tertiary, success, warning, error, notification
+- typography.fontFamily and typography.monoFontFamily
+- spacing: 1, 2, 3, 4, 6, 8
+- radius: none, sm, md, lg, xl, pill
+- borderRadius: button, input, card, modal, pill
+- shadow: sm, md, lg
+
+Use hex colors in #RRGGBB format. Use pixel strings such as "8px" for spacing and radius. Use shadow strings such as "0px 4px 12px rgba(0, 0, 0, 0.14)".
+
+Return one JSON object only with this structure:
 {
-  "primary": "#RRGGBB",
-  "secondary": "#RRGGBB",
-  "tertiary": "#RRGGBB",
-  "success": "#RRGGBB",
-  "warning": "#RRGGBB",
-  "error": "#RRGGBB",
-  "notification": "#RRGGBB",
-  "typography": {
-    "fontFamily": "FONT_NAME",
-    "monoFontFamily": "Roboto Mono"
-  }
-}
+  "primary": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "secondary": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "tertiary": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "success": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "warning": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "error": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "notification": {"100":"#RRGGBB","300":"#RRGGBB","500":"#RRGGBB","700":"#RRGGBB","900":"#RRGGBB"},
+  "typography": {"fontFamily":"FONT_NAME","monoFontFamily":"Roboto Mono"},
+  "spacing": {"1":"4px","2":"8px","3":"12px","4":"16px","6":"24px","8":"32px"},
+  "radius": {"none":"0px","sm":"4px","md":"8px","lg":"12px","xl":"16px","pill":"9999px"},
+  "borderRadius": {"button":"8px","input":"8px","card":"12px","modal":"16px","pill":"9999px"},
+  "shadow": {"sm":"0px 4px 10px rgba(0, 0, 0, 0.14)","md":"0px 10px 24px rgba(0, 0, 0, 0.18)","lg":"0px 18px 40px rgba(0, 0, 0, 0.22)"}
+}`;
 
-Kai Creator will expand this compact JSON into:
-- primary, secondary, tertiary, success, warning, error, notification, and neutral color scales from 100 to 900
-- primitive variables
-- alias variables with design-system names like color/status/error/200 and radius/component/card
-- typography styles
-- spacing variables
-- corner radius and border radius variables
-- shadow variables and effect styles`;
+    const paidPrompt = `Create a complete, production-ready JSON design-token file for the Kai Creator Figma plugin.
+
+Ask me these questions one at a time before generating anything:
+1. What is the primary brand color in hex format? Example: #EF5350
+2. What typography font family should be used? Example: Inter
+
+After I answer, return ONLY valid JSON. Never use Markdown, code fences, comments, explanations, trailing commas, or a minified one-line response. Format the JSON across multiple lines with 2-space indentation.
+
+This is the PAID version. Generate a complete design system. Every color scale must contain exactly these keys: 100, 200, 300, 400, 500, 600, 700, 800, 900. Key 500 must be the main color.
+
+Calculate secondary and tertiary from the exact primary color I provide instead of selecting a stock palette. Use split-complementary color theory by default: calculate secondary at approximately primary hue +150 degrees and tertiary at approximately primary hue +210 degrees on an HSL color wheel. Keep saturation intentional and adjust lightness to maintain accessible contrast. Do not copy the primary hue, do not reuse a generic blue, and do not use #5C6BC0 or #26A69A as fixed defaults. Before returning JSON, verify that secondary/500 and tertiary/500 are different from primary/500 and from each other. Success must be green, warning amber, error red, and notification must be a distinct informational color.
+
+Include:
+- primary, secondary, tertiary, success, warning, error, notification, neutral color scales
+- semantic aliases under color.brand, color.bg, color.text, color.border, and color.status
+- status aliases such as color/status/error/100 through color/status/error/900
+- typography styles with name, fontFamily, fontStyle, fontSize, lineHeight, letterSpacing, and textCase
+- typography.fontFamily and typography.monoFontFamily
+- spacing variables from 1 through 16 using pixel strings
+- primitive radius values and semantic aliases for cornerRadius, borderRadius, and component radius
+- shadow values for xs, sm, md, and lg using valid CSS-like shadow strings
+- component aliases for button, input, card, modal, tooltip, toast, and focus
+
+Use #RRGGBB for colors, pixel strings such as "8px" for dimensions, and rgba() for shadow colors. Use the supplied primary color as primary. Choose secondary and tertiary colors that support it. Use accessible defaults for success, warning, error, and notification. Do not invent unsupported token types.
+
+Return one JSON object only. Use this top-level organization:
+{
+  "primitives": {"color": {}, "spacing": {}, "radius": {}, "shadow": {}},
+  "semantic": {"color": {}, "spacing": {}, "radius": {}, "shadow": {}},
+  "typography": {"fontFamily":"FONT_NAME","monoFontFamily":"Roboto Mono","styles":[]}
+}`;
 
     const tokenInput = document.getElementById("token-input");
     const fileInput = document.getElementById("file-input");
@@ -734,11 +774,23 @@ Kai Creator will expand this compact JSON into:
     const actionHint = document.getElementById("action-hint");
     const promptModal = document.getElementById("prompt-modal");
     const promptText = document.getElementById("prompt-text");
+    const freePromptButton = document.getElementById("free-prompt");
+    const paidPromptButton = document.getElementById("paid-prompt");
     const closePromptButton = document.getElementById("close-prompt");
     const copyPromptButton = document.getElementById("copy-prompt");
     const splash = document.getElementById("splash");
 
-    promptText.textContent = designerPrompt;
+    let activePrompt = freePrompt;
+    promptText.textContent = activePrompt;
+
+    function selectPrompt(prompt, button) {
+      activePrompt = prompt;
+      promptText.textContent = prompt;
+      freePromptButton.classList.toggle("is-active", button === freePromptButton);
+      paidPromptButton.classList.toggle("is-active", button === paidPromptButton);
+      freePromptButton.setAttribute("aria-selected", String(button === freePromptButton));
+      paidPromptButton.setAttribute("aria-selected", String(button === paidPromptButton));
+    }
 
     window.setTimeout(() => {
       splash.classList.add("is-hidden");
@@ -867,8 +919,11 @@ Kai Creator will expand this compact JSON into:
       openPromptModal();
     };
 
+    freePromptButton.onclick = () => selectPrompt(freePrompt, freePromptButton);
+    paidPromptButton.onclick = () => selectPrompt(paidPrompt, paidPromptButton);
+
     copyPromptButton.onclick = async () => {
-      const copied = await copyTextToClipboard(designerPrompt);
+      const copied = await copyTextToClipboard(activePrompt);
 
       if (copied) {
         setStatus("Prompt copied", "success");

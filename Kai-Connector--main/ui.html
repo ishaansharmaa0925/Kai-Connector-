@@ -668,19 +668,24 @@
       }
     };
 
-    const designerPrompt = `Create a compact JSON theme config for Kai Creator, a Figma plugin that expands compact inputs into a complete design system with color scales, aliases, typography, spacing, corner radius, border radius, and shadows.
+    const designerPrompt = `Create a compact, readable JSON theme config for Kai Creator, a Figma plugin that expands compact inputs into a complete design system with color scales, aliases, typography, spacing, corner radius, border radius, and shadows.
 
-Before you answer, check these two fields:
-Primary color: [PASTE PRIMARY COLOR HERE]
-Typography: [PASTE FONT FAMILY HERE]
+First check whether you know these two values:
+1. Primary color
+2. Typography font family
 
-If either field is blank or still contains brackets, ask me only for the missing value and stop.
-If both fields are filled, return one raw JSON object only.
+If either value is missing, ask exactly these questions and stop:
+What is the primary color? Example: #EF5350
+What is the typography font family? Example: Open Sans
+
+After I answer both questions, return one raw JSON object only.
 
 Rules:
 - No markdown.
 - No code fences.
 - No explanation before or after the JSON.
+- Do not return the JSON on one line.
+- Format the JSON across multiple lines with 2-space indentation.
 - Use valid JSON only.
 - Use double quotes for every key and string.
 - Use hex colors only, formatted as "#RRGGBB".
@@ -690,8 +695,9 @@ Rules:
 - Use the typography value as typography.fontFamily.
 - Use "Roboto Mono" for typography.monoFontFamily unless I provide a mono font.
 - Keep the exact JSON keys shown below.
+- Replace every placeholder with real values.
 
-Return exactly this compact shape with real values:
+Return exactly this readable JSON shape:
 {
   "primary": "#RRGGBB",
   "secondary": "#RRGGBB",
